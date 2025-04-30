@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,22 +7,48 @@ import {
   TextInput,
 } from 'react-native';
 
-import { useState, useEffect } from 'react';
+interface Task {
+  id: number;
+  task: string;
+}
 
 export default function Home() {
+  const [newTask, setNewTask] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  function handleAddTask() {
+    const newTaskWithId = {
+      id: Date.now(),
+      task: newTask,
+    };
+
+    setTasks((prevTasks) => [...prevTasks, newTaskWithId]);
+    setNewTask('');
+  }
+
   return (
     <View style={styles.app_container}>
       <Text style={styles.text_container}>Task Manager</Text>
 
       <TextInput
+        value={newTask}
+        onChangeText={setNewTask}
         style={styles.input}
         placeholder="Type your task"
         placeholderTextColor="#ccc"
       />
 
-      <TouchableOpacity style={styles.home_button}>
+      <TouchableOpacity style={styles.home_button} onPress={handleAddTask}>
         <Text style={styles.text_button}>Submit</Text>
       </TouchableOpacity>
+
+      <View style={styles.taskListContainer}>
+        {tasks.map((task) => (
+          <Text key={task.id} style={styles.taskText}>
+            {task.task.trim() ? task.task : 'Empty Task'}
+          </Text>
+        ))}
+      </View>
     </View>
   );
 }
@@ -56,8 +83,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   text_button: {
-    color: '#E8F1F2',
+    color: '#FFF',
     fontSize: 18,
     textAlign: 'center',
+  },
+  taskListContainer: {
+    marginTop: 30,
+  },
+  taskText: {
+    color: '#E8F1F2',
+    fontSize: 20,
+    marginBottom: 10,
   },
 });
